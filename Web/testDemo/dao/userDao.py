@@ -1,24 +1,25 @@
 import pymysql
 
+
 # 打开数据库连接
 
-class DataBase() :
-    def reconnect(self) :
+class DataBase():
+    def reconnect(self):
         host = "localhost"
-        #host = "192.168.0.142"
-        self.conn=pymysql.connect(
+        # host = "192.168.0.142"
+        self.conn = pymysql.connect(
             host=host,
             user="root",
-            #password="tsh08040313",
+            # password="tsh08040313",
             password="zctest",
             database="test",
             charset="utf8"
-            )
-        
-    def __del__(self) :
-        try :
+        )
+
+    def __del__(self):
+        try:
             self.conn.close()
-        except Exception :
+        except Exception:
             pass
 
     def show(self):
@@ -29,18 +30,18 @@ class DataBase() :
                 sql = "SELECT * FROM STU"
                 cursor.execute(sql)
                 results = cursor.fetchall()
-            ans=True
+            ans = True
         except Exception:
             self.conn.rollback()
-            ans=False
-        else :
+            ans = False
+        else:
             for i in range(len(results)):
                 student.update({results[i][0]: [results[i][1], results[i][2]]})
-        finally :
+        finally:
             self.conn.close()
-        return ans,student
+        return ans, student
 
-    def add(self,id: str, name: str, age: int):
+    def add(self, id: str, name: str, age: int):
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
@@ -48,42 +49,43 @@ class DataBase() :
                 sql = "INSERT INTO STU(ID,NAME,AGE)VALUES ('%s','%s',%d);"
                 cursor.execute(sql % (id, name, age))
             self.conn.commit()
-            ans=True
-        except Exception: 
+            ans = True
+        except Exception:
             self.conn.rollback()
-            ans=False
-        finally :
+            ans = False
+        finally:
             self.conn.close()
         return ans
 
-    def delete(self,id: str):
+    def delete(self, id: str):
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
                 sql = "DELETE FROM STU WHERE ID='%s';"
                 cursor.execute(sql % (id))
             self.conn.commit()
-            ans=True
+            ans = True
         except Exception:
             self.conn.rollback()
-            ans=False
-        finally :
+            ans = False
+        finally:
             self.conn.close()
         return ans
 
-    def edit(self,id: str, name: str, age: int):
+    def edit(self, id: str, name: str, age: int):
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
                 sql = "UPDATE STU SET NAME = '%s', AGE = '%d' WHERE ID = '%s';"
                 cursor.execute(sql % (name, age, id))
             self.conn.commit()
-            ans=True
+            ans = True
         except Exception:
             self.conn.rollback()
-            ans=False
-        finally :
+            ans = False
+        finally:
             self.conn.close()
         return ans
 
-db=DataBase()
+
+db = DataBase()
