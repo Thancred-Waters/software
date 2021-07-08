@@ -3,3 +3,6 @@
 内容：基于python web技术的移动端应用设计 
 <p></p>
 技术：fastapi & mysql & uni-app & pymysql
+
+### 7/7进度
+完成了简单CRUD和原型设计
