@@ -11,7 +11,7 @@ from fastapi import FastAPI, Body, File, UploadFile, HTTPException
 from fastapi.responses import HTMLResponse
 from starlette.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, Field
-import db
+#import db
 
 import nest_asyncio
 
@@ -42,11 +42,11 @@ class UserOut(BaseModel):
     state: str = "Accepted"
     email: EmailStr
 
-
+"""
 @app.get("/login")
 async def login(user_ID: str, name: str):
     return {"result": db.find(user_ID, name)}
-
+"""
 
 @app.post("/user/", response_model=UserOut, response_model_exclude={"email"})
 async def create_user(user: UserIn = Body(...)):
@@ -61,11 +61,10 @@ async def create_files(files: List[bytes] = File(...)):
 
 
 @app.post("/uploadfiles/")
-async def create_uploadfiles(files: List[UploadFile] = File(...)):
-    for file in files:
-        with open(file.filename, "wb") as f:
-            f.write(await file.read())
-    return {"file_names": [file.filename for file in files]}
+async def create_uploadfiles(file: List[UploadFile] = File(...)):
+    with open(file.filename, "wb") as f:
+        f.write(await file.read())
+    return {"file_names": file.filename}
 
 
 @app.get("/")
@@ -85,4 +84,4 @@ async def main():
     return HTMLResponse(content=content)
 
 
-uvicorn.run(host="192.168.0.153", port=8000, app=app)
+uvicorn.run(host="192.168.1.104", port=8000, app=app)
