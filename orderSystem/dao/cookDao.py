@@ -1,6 +1,8 @@
 import pymysql
 from orderSystem.host_addr import *
 
+from datetime import datetime
+
 # 打开数据库连接
 
 class cook():
@@ -31,7 +33,7 @@ class cook():
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
-                sql = "SELECT * FROM DISH"
+                sql = "SELECT * FROM DISH ORDER BY CREATE_TIME ASC;"
                 cursor.execute(sql)
                 results = cursor.fetchall()
             ans = True
@@ -58,8 +60,12 @@ class cook():
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
-                sql = "UPDATE DISH SET STATE = 1 WHERE TABLE_NUMBER = '%d' AND DISH_NAME = '%s' AND DISH_NUMBER = '%d' AND STATE=0;"
+                sql = "select create_time from DISH where table_number=%d AND dish_name='%s' AND dish_number=%d AND STATE=0 order by create_time asc;"
                 cursor.execute(sql % (TABLE_NUMBER, DISH_NAME, DISH_NUMBER))
+                t = cursor.fetchone()[0]
+                print(t)
+                sql = "UPDATE DISH SET STATE = 1 WHERE CREATE_TIME='%s' AND TABLE_NUMBER = '%d' AND DISH_NAME = '%s' AND DISH_NUMBER = '%d' AND STATE=0;"
+                cursor.execute(sql % (t,TABLE_NUMBER, DISH_NAME, DISH_NUMBER))
             self.conn.commit()
             ans = True
         except Exception:
@@ -80,8 +86,22 @@ class cook():
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
-                sql = "UPDATE DISH SET STATE = 2 WHERE TABLE_NUMBER = '%d' AND DISH_NAME = '%s' AND DISH_NUMBER = '%d' AND STATE=1;"
+                sql = "select create_time from DISH where table_number=%d AND dish_name='%s' AND dish_number=%d AND STATE=1 order by create_time asc;"
+                print(sql)
                 cursor.execute(sql % (TABLE_NUMBER, DISH_NAME, DISH_NUMBER))
+                print("OKKKKKKKKKKKKKKKKKKKKKKK")
+                t = cursor.fetchone()[0]
+                print(t)
+                sql = """
+                UPDATE DISH SET STATE = 2,CREATE_TIME='%s' 
+                WHERE CREATE_TIME='%s' AND 
+                TABLE_NUMBER = '%d' AND 
+                DISH_NAME = '%s' AND 
+                DISH_NUMBER = '%d' AND 
+                STATE=1;"
+                """
+                cursor.execute(sql % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"),t,
+                                      TABLE_NUMBER, DISH_NAME, DISH_NUMBER))
             self.conn.commit()
             ans = True
         except Exception:
@@ -101,19 +121,18 @@ class cook():
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
-                sql = "SELECT * FROM NOTICE WHERE STATE = 0"
+                sql = "SELECT * FROM NOTICE WHERE STATE = 0 order by create_time desc;"
                 cursor.execute(sql)
-                results = cursor.fetchall()
+                results = cursor.fetchone()
                 sql = 'UPDATE NOTICE SET STATE = 1 WHERE NOTICE = "%s";'
-                # print(results[0][0])
-                cursor.execute(sql % (results[0][0]))
+                cursor.execute(sql % (results[0]))
             self.conn.commit()
             ans = True
         except Exception:
             self.conn.rollback()
             ans = False
         else:
-            msg.append({'标题': results[0][2],'时间': results[0][1],'内容': results[0][0]})
+            msg.append({'标题': results[2],'时间': results[1],'内容': results[0]})
         finally:
             self.conn.close()
         return ans, msg
@@ -126,7 +145,7 @@ class cook():
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
-                sql = "SELECT * FROM NOTICE ORDER BY CREATE_TIME DESC"
+                sql = "SELECT * FROM NOTICE ORDER BY CREATE_TIME DESC;"
                 cursor.execute(sql)
                 results = cursor.fetchall()
             ans = True

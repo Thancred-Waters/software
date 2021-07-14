@@ -7,7 +7,7 @@ Created on Fri Jul  9 19:32:01 2021
 
 from orderSystem.service import loginService
 
-from fastapi import APIRouter,Query
+from fastapi import APIRouter
 
 from pydantic import BaseModel
 from typing import Optional,List

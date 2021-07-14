@@ -9,7 +9,15 @@ def modify(dish_id:int,
            description:str, 
            image:str) :
     try :
+        if recommend=="特色菜" :
+            recommend=1
+        else :
+            recommend=0
         msg,data=a.modify(dish_id, dish_name, price, recommend, description, image)
+        if data["是否推荐"]=="1" :
+            data["是否推荐"]="特色菜"
+        else :
+            data["是否推荐"]="传统菜"
     except Exception :
         print("ERR modify")
     return msg,data
@@ -29,12 +37,18 @@ def finish(id:int,
     try :
         msg,data=a.finish(id, 订单号, 是否免单, 结账金额)
     except Exception :
+        msg=False
+        data={}
         print("ERR finish")
     return msg,data
 
 def query(id:int) :
     try :
         msg,data=a.query(id)
+        if data["是否推荐"] :
+            data["是否推荐"]="特色菜"
+        else :
+            data["是否推荐"]="传统菜"
     except Exception :
         print("ERR query")
     return msg,data
@@ -43,6 +57,11 @@ def query(id:int) :
 def show() :
     try :
         msg,data=a.show()
+        for item in data :
+            cnt=0
+            for dish in item["订单内容"] :
+                cnt+=int(dish["数量"])
+            item.update({"菜品总数":cnt})
     except Exception :
         print("ERR show")
     return msg,data
@@ -50,10 +69,10 @@ def show() :
 def delete(id:int,
            菜品id:int) :
     try :
-        msg,data=a.delete(id,菜品id)
+        msg=a.delete(id,菜品id)
     except Exception :
         print("ERR delete")
-    return msg,data
+    return msg
 
 def add(id:int,
         菜名:str,
@@ -62,6 +81,11 @@ def add(id:int,
         简介:str,
         图片:str) :
     try :
+        if 是否推荐=="特色菜" :
+            是否推荐=1
+        else :
+            是否推荐=0
+        print(是否推荐)
         msg,data=a.add(id,菜名,价格,是否推荐,简介,图片)
     except Exception :
         print("ERR add")
@@ -83,7 +107,6 @@ def create_user(管理员id:int,
         else :
             job=0
         msg,id=a.create_user(管理员id,创建用户名,密码,job,图片)
-        print("okkkkkkkkkkkkk")
         if msg :
             data={"员工id":id,"用户名":创建用户名,"身份":身份}
         else :
@@ -119,13 +142,18 @@ def query_menu() :
         menu=a.query_menu()
         data=[]
         for i in menu :
+            rec = i[5]
+            if rec==1 :
+                rec="特色菜"
+            else :
+                rec="传统菜"
             data.append({
                 '菜品id':i[0],
                 '菜品名称':i[1],
                 '菜品价格':i[2],
                 '图片':i[3],
                 '简介':i[4],
-                '是否推荐':i[5]
+                '是否推荐':rec
                 }),
         msg=True
     except Exception :

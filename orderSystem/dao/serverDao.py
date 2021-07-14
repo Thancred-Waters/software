@@ -60,7 +60,6 @@ class Server():
                     cursor.execute(sql % (TABLE_NUMBER))
                     state = cursor.fetchall()
                     if len(state) and (state[0][0] == 0):
-                        
                         sql = "SELECT ID FROM DISH ORDER BY ID DESC;"
                         cursor.execute(sql)
                         id = cursor.fetchall()
@@ -80,7 +79,7 @@ class Server():
                     sql = "INSERT INTO DISH(ID,TABLE_NUMBER,PEOPLE,EMPLOYEE,CREATE_TIME,DISH_NAME,DISH_NUMBER,PRICE,STATE)" \
                           "VALUES (%d,%d,%d,%d,'%s','%s',%d,%f,%d);"
                     cursor.execute(sql % (dish_id, TABLE_NUMBER, PEOPLE_NUMBER, EMPLOYEE,
-                                          datetime.now(),
+                                          datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                           i, order[i], dish_price[0][0] * order[i], 0))
                 self.conn.commit()
             ans = True
@@ -130,7 +129,7 @@ class Server():
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
-                sql = "SELECT * FROM NOTICE ORDER BY CREATE_TIME DESC"
+                sql = "SELECT * FROM NOTICE ORDER BY CREATE_TIME DESC;"
                 cursor.execute(sql)
                 results = cursor.fetchall()
             ans = True
@@ -246,22 +245,21 @@ class Server():
         msg = dict()
         try:
             self.reconnect()
-            with self.conn.cursor() as cursor:
-                sql = "SELECT TABLE_NUMBER FROM STATE WHERE TABLE_STATE=1;"
+            with self.conn.cursor() as cursor :
+                sql = """
+                SELECT * FROM DISH
+                INNER JOIN STATE
+                ON DISH.STATE=2
+                AND STATE.TABLE_STATE=1
+                AND STATE.TABLE_NUMBER=DISH.TABLE_NUMBER
+                ORDER BY DISH.CREATE_TIME DESC;
+                """
                 cursor.execute(sql)
-                state = cursor.fetchall()
-                for i in range(len(state)):
-                    table_number = state[i][0]
-                    sql = "SELECT ID FROM DISH WHERE TABLE_NUMBER=%d ORDER BY ID DESC;"
-                    cursor.execute(sql % int(table_number))
-                    id = cursor.fetchall()[0][0]
-                    sql = "SELECT * FROM DISH WHERE ID=%d AND STATE = 2;"
-                    cursor.execute(sql % int(id))
-                    finished_dish = cursor.fetchall()
-                    for j in range(len(finished_dish)):
-                        data.append(",".join([str(finished_dish[j][1]),str(finished_dish[j][5]),str(finished_dish[j][3])]))
-                    for j in range(len(data)):
-                        msg.update({str(j+1):data[j]})
+                finished_dish = cursor.fetchall()
+                for j in range(len(finished_dish)):
+                    data.append(",".join([str(finished_dish[j][1]),str(finished_dish[j][5]),str(finished_dish[j][3])]))
+                for j in range(len(data)):
+                    msg.update({str(j+1):data[j]})
             self.conn.commit()
             ans = True
         except Exception:

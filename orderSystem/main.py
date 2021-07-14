@@ -3,8 +3,6 @@ import nest_asyncio
 from fastapi import FastAPI
 from orderSystem.api import server,cook,admin,login
 from starlette.middleware.cors import CORSMiddleware
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse,FileResponse
 from fastapi.staticfiles import StaticFiles
 
 nest_asyncio.apply()

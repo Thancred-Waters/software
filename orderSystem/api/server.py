@@ -5,7 +5,7 @@ Created on Fri Jul  9 19:28:12 2021
 @author: zc
 """
 
-from fastapi import APIRouter,Query,Body
+from fastapi import APIRouter,Body
 
 from pydantic import BaseModel
 

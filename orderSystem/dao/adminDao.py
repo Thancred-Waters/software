@@ -9,6 +9,7 @@ import time
 
 import pymysql
 from orderSystem.host_addr import *
+from datetime import datetime
 
 
 # 打开数据库连接
@@ -30,7 +31,7 @@ class admin():
         except Exception:
             pass
 
-    def modify(self, ID: int, DISH_NAME: str, PRICE: float, RECOM: str, INTRO: str, PHOTO: str):
+    def modify(self, ID: int, DISH_NAME: str, PRICE: float, RECOM: int, INTRO: str, PHOTO: str):
         """
         保持ID不变，更新其他参数
         :return: 更新后的各项参数
@@ -40,7 +41,7 @@ class admin():
             self.reconnect()
             with self.conn.cursor() as cursor:
                 sql = 'UPDATE MENU SET DISH_NAME="%s",PRICE=%f,RECOM=%d,INTRO="%s",PHOTO="%s" WHERE ID = %d;'
-                cursor.execute(sql % (DISH_NAME, PRICE, int(RECOM), INTRO, PHOTO, ID))  
+                cursor.execute(sql % (DISH_NAME, PRICE, RECOM, INTRO, PHOTO, ID))  
             self.conn.commit()
             ans = True
         except Exception:
@@ -58,7 +59,7 @@ class admin():
                 cursor.execute(sql % id)
                 name = cursor.fetchall()[0][0]
                 sql = 'INSERT INTO NOTICE(NOTICE, CREATE_TIME, NAME, STATE) VALUES("%s", "%s", "%s", 0);'
-                cursor.execute(sql % (content, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), name))
+                cursor.execute(sql % (content, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name))
             self.conn.commit()
             ans = True
         except Exception:
@@ -103,7 +104,7 @@ class admin():
         finally:
             self.conn.close()
 
-        return ans, {'菜品id': data[0][0], '菜名': data[0][1], '价格': float(data[0][2]), '是否推荐': str(data[0][5]),
+        return ans, {'菜品id': data[0][0], '菜名': data[0][1], '价格': float(data[0][2]), '是否推荐': data[0][5],
                      '简介': data[0][4], '图片': data[0][3]}
 
     def show(self):
@@ -157,7 +158,7 @@ class admin():
             self.conn.close()
         return ans
 
-    def add(self, ID: int, DISH_NAME: str, PRICE: float, RECOM: str, INTRO: str, PHOTO: str):
+    def add(self, ID: int, DISH_NAME: str, PRICE: float, RECOM: int, INTRO: str, PHOTO: str):
         """
         :return: 更新后的各项参数
         """
@@ -165,7 +166,7 @@ class admin():
             self.reconnect()
             with self.conn.cursor() as cursor:
                 sql = 'INSERT INTO MENU (ID,DISH_NAME,PRICE,PHOTO,INTRO,RECOM) VALUES(%d,"%s",%f,"%s","%s",%d);'
-                cursor.execute(sql % (ID, DISH_NAME, PRICE, PHOTO, INTRO, int(RECOM)))
+                cursor.execute(sql % (ID, DISH_NAME, PRICE, PHOTO, INTRO, RECOM))
             self.conn.commit()
             ans = True
         except Exception:
