@@ -148,6 +148,72 @@ class cook():
         finally:
             self.conn.close()
         return ans, msg
+    
+    def query_job(self,id:int) -> int :
+        """
+        
+        根据员工id查找对应职能
+        
+        Parameters
+        ----------
+        id : int
+            员工id.
+
+        Returns
+        -------
+        int 
+            job=
+            3->超级管理员
+            2->普通管理员
+            1->服务员
+            0->后厨
+            -1->用户不存在.
+
+        """
+        try :
+            self.reconnect()
+            with self.conn.cursor() as cursor :
+                sql="select JOB from EMPLOYEE where ID=%d;"
+                cursor.execute(sql % id)
+                job=cursor.fetchone()[0]
+            self.conn.commit()
+        except Exception :
+            job=-1
+            self.conn.rollback()
+        finally :
+            self.conn.close()
+        return job
+    
+    def query_login(self,id:int) -> bool :
+        """
+        
+        检验员工是否处于登录状态
+        Parameters
+        ----------
+        id : int
+            员工ID.
+
+        Returns
+        -------
+        bool 
+            True->员工已登录
+            False->员工未登录.
+
+        """
+        try :
+            self.reconnect()
+            with self.conn.cursor() as cursor :
+                sql="select STATE from EMPLOYEE WHERE ID=%d;"
+                cursor.execute(sql % id);
+                state=cursor.fetchone()[0]
+            ans=True if state else False
+            self.conn.commit()
+        except Exception :
+            ans=False
+            self.conn.rollback()
+        finally :
+            self.conn.close()
+        return ans       
 
     def logout(self,id:int):
         """

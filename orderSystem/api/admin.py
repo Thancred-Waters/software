@@ -118,18 +118,18 @@ async def show() :
 @router.post('/delete',response_model=Res)
 async def delete(id:int = Body(...,embed=True),
                  菜品id:int = Body(...,embed=True)) :
-    msg,data=adminService.delete(id, 菜品id)
+    msg=adminService.delete(id, 菜品id)
     res=Res()
     res.msg=msg
-    res.data=data
     return res
 
 @router.post('/add',response_model=Res_Finish)
 async def add(am:Add_Menu) :
-    msg,data=adminService.add(*am.dict().values())
-    res=Res_Finish()
-    res.data=am
-    res.msg=msg
+    res=Res_Finish(msg=False)
+    if adminService.check_empty(am.dict().values()) : 
+        msg,data=adminService.add(*am.dict().values())
+        res.data=data
+        res.msg=msg
     return res   
 
 @router.post('/upload_pic',response_model=Res)

@@ -2,6 +2,16 @@
 
 from orderSystem.dao.adminDao import a
 
+def check_empty(token : list) -> bool :
+    for i in token :
+        if isinstance(i,str) and i=="" :
+            return False
+        if isinstance(i,int) and i==0 :
+            return False
+        if isinstance(i,float) and i==0.0 :
+            return False
+    return True
+
 def modify(dish_id:int,
            dish_name:str,
            price:float,
@@ -86,8 +96,14 @@ def add(id:int,
         else :
             是否推荐=0
         print(是否推荐)
-        msg,data=a.add(id,菜名,价格,是否推荐,简介,图片)
+        if not a.query_same_dish(菜名) :
+            msg=False
+            data={}
+        else :
+            msg,data=a.add(id,菜名,价格,是否推荐,简介,图片)
     except Exception :
+        msg=False
+        data={}
         print("ERR add")
     return msg,data
 
@@ -101,8 +117,10 @@ def create_user(管理员id:int,
         if 密码!=确认密码 :
             return False,{}
         if 身份=="管理员" :
-            job=2
-        elif 身份=="点餐员" :
+            return False,{}
+        if not a.query_same_name(创建用户名) :
+            return False,{}
+        if 身份=="点餐员" :
             job=1
         else :
             job=0
@@ -117,13 +135,43 @@ def create_user(管理员id:int,
 
 def delete_user(管理员id:int,
                 被删除id:int) :
+    """
+    
+
+    Parameters
+    ----------
+    管理员id : int
+        删除用户的管理员.
+    被删除id : int
+        被删除用户的id.
+
+    Returns
+    -------
+    TYPE
+        返回True/False表示是否删除成功.
+
+    """
     try :
+        job=a.query_job(被删除id)
+        if job==-1 or job==2 or job==3 :
+            return False
         msg=a.delete_user(管理员id, 被删除id)
     except Exception :
         print("ERR delete user")
     return msg
 
 def show_user() :
+    """
+    对管理员展示所有用户的信息
+
+    Returns
+    -------
+    msg : TYPE
+        请求是否成功.
+    data : TYPE
+        用户数据.
+
+    """
     try :
         msg,data=a.show_user()
         for user in data :
