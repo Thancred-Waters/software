@@ -87,19 +87,9 @@ class cook():
             self.reconnect()
             with self.conn.cursor() as cursor:
                 sql = "select create_time from DISH where table_number=%d AND dish_name='%s' AND dish_number=%d AND STATE=1 order by create_time asc;"
-                print(sql)
                 cursor.execute(sql % (TABLE_NUMBER, DISH_NAME, DISH_NUMBER))
-                print("OKKKKKKKKKKKKKKKKKKKKKKK")
                 t = cursor.fetchone()[0]
-                print(t)
-                sql = """
-                UPDATE DISH SET STATE = 2,CREATE_TIME='%s' 
-                WHERE CREATE_TIME='%s' AND 
-                TABLE_NUMBER = '%d' AND 
-                DISH_NAME = '%s' AND 
-                DISH_NUMBER = '%d' AND 
-                STATE=1;"
-                """
+                sql = "UPDATE DISH SET STATE = 2,CREATE_TIME='%s' WHERE CREATE_TIME='%s' AND TABLE_NUMBER = '%d' AND DISH_NAME = '%s' AND DISH_NUMBER = '%d' AND STATE=1;"
                 cursor.execute(sql % (datetime.now().strftime("%Y-%m-%d %H:%M:%S"),t,
                                       TABLE_NUMBER, DISH_NAME, DISH_NUMBER))
             self.conn.commit()

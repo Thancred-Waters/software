@@ -226,7 +226,7 @@ class admin():
         else:
             for i in range(len(results)):
                 data.append({'员工id':results[i][0],'用户名':results[i][1],
-                             '图片':"http://"+results[i][3],'身份':results[i][4]})
+                             '图片':results[i][3],'身份':results[i][4]})
         finally:
             self.conn.close()
         return ans,data
