@@ -25,6 +25,7 @@ class User(BaseModel) :
     id:int
     name:str
     job:int
+    pic:str
     
 class UserOut(BaseModel) :
     #用户登出消息体

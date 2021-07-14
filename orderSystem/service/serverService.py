@@ -5,6 +5,10 @@ from datetime import datetime
 
 def place_order(table:int,id:int,num:int,order:dict) :
     try :
+        if s.query_job(id)!=1 :
+            return False,{}
+        if not s.query_login(id) :
+            return False,{}
         ans,dish_id=s.place_order(table, num, id, order)
         data={"订单编号":dish_id,"下单时间":datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"菜品列表":order}
     except Exception :
@@ -18,15 +22,23 @@ def window() :
         return 
     return ans,data
 
-def broadcast() :
+def broadcast(id:int) :
     try :
+        if s.query_job(id)!=1 :
+            return False,{}
+        if not s.query_login(id) :
+            return False,{}
         ans,data=s.broadcast()
     except Exception :
         return 
     return ans,data
 
-def show() :
+def show(id:int) :
     try :
+        if s.query_job(id)!=1 :
+            return False,{}
+        if not s.query_login(id) :
+            return False,{}
         ans,data=s.show()
         for item in data :
             cnt=0
@@ -39,6 +51,10 @@ def show() :
 
 def buy(table:int,id:int) :
     try :
+        if s.query_job(id)!=1 :
+            return False,{}
+        if not s.query_login(id) :
+            return False,{}
         ans=s.buy(table, id)
     except Exception :
         return False 
@@ -46,20 +62,32 @@ def buy(table:int,id:int) :
 
 def logout(id:int) :
     try :
+        if s.query_job(id)!=1 :
+            return False,{}
+        if not s.query_login(id) :
+            return False,{}
         ans=s.logout(id)
     except Exception :
         return False
     return ans
 
-def pass_order() :
+def pass_order(id:int) :
     try :
+        if s.query_job(id)!=1 :
+            return False,{}
+        if not s.query_login(id) :
+            return False,{}
         ans,data=s.PASS()
     except Exception :
         return 
     return ans,data
 
-def query_menu() :
+def query_menu(id:int) :
     try :
+        if s.query_job(id)!=1 :
+            return False,[]
+        if not s.query_login(id) :
+            return False,[]
         menu=s.query_menu()
         data=[]
         for i in menu :

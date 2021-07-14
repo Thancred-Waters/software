@@ -33,7 +33,7 @@ class Dish(BaseModel) :
 
 class Broadcast(BaseModel) :
     标题:str = ""
-    时间:str = ""
+    时间:datetime = datetime(2000,1,1)
     内容:str = ""
 
 class Res(BaseModel) :

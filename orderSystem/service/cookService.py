@@ -48,6 +48,7 @@ def broadcast() :
     """
     try:
         ans,data=c.broadcast()
+        print(data)
     except Exception :
         pass
     return ans,data

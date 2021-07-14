@@ -34,7 +34,7 @@ class Order_After(BaseModel) :
 class Table_Order(BaseModel) :
     #每桌下的订单
     桌号:str = ""
-    下单时间:str = ""
+    下单时间:datetime = datetime(2000,1,1)
     金额:float = 0
     人数:int = 0
     订单状态:str = ""
@@ -49,7 +49,7 @@ class BuyOrder(BaseModel) :
     
 class Broadcast(BaseModel) :
     标题:str = ""
-    时间:str = ""
+    时间:datetime = datetime(2000,1,1)
     内容:str = ""  
     
 class Res(BaseModel) :
@@ -120,8 +120,8 @@ async def window() :
     res.data=data
     return res
 
-@router.get("/broadcast",response_model=ResBroad)
-async def broadcast() :
+@router.post("/broadcast",response_model=ResBroad)
+async def broadcast(id:int = Body(...,embed=True)) :
     """
     获取最近公告
 
@@ -132,14 +132,14 @@ async def broadcast() :
 
     """
     #发送驻留公告
-    msg,data=serverService.broadcast()
+    msg,data=serverService.broadcast(id)
     res=ResBroad()
     res.msg=msg
     res.data=data
     return res
 
-@router.get("/show",response_model=ResTableOrder)
-async def show() :
+@router.post("/show",response_model=ResTableOrder)
+async def show(id:int = Body(...,embed=True)) :
     """
     
     展示所有订单
@@ -149,7 +149,7 @@ async def show() :
         所有订单状态.
 
     """
-    msg,data = serverService.show()
+    msg,data = serverService.show(id)
     res=ResTableOrder()
     res.msg=msg
     res.data=data
@@ -200,8 +200,8 @@ async def logout(id:int = Body(...,embed=True)) :
     res.msg=msg
     return res
 
-@router.get("/pass",response_model=ResPass)
-async def pass_order() :
+@router.post("/pass",response_model=ResPass)
+async def pass_order(id:int = Body(...,embed=True)) :
     """
     服务员发送传菜请求
 
@@ -210,16 +210,16 @@ async def pass_order() :
     None.
 
     """
-    msg,data=serverService.pass_order()
+    msg,data=serverService.pass_order(id)
     res=ResPass()
     res.msg=msg
     res.data=data
     return res
 
-@router.get("/query_menu",response_model=ResMenu)
-async def query_menu() :
-   msg,data=serverService.query_menu()
-   res=ResMenu()
-   res.msg=msg
-   res.data=data
-   return res
+@router.post("/query_menu",response_model=ResMenu)
+async def query_menu(id:int = Body(...,embed=True)) :
+    msg,data=serverService.query_menu(id)
+    res=ResMenu()
+    res.msg=msg
+    res.data=data
+    return res

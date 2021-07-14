@@ -1,5 +1,5 @@
 localhost = "192.168.1.104"
 url = "rm-bp1565i7xkloy1o23wo.mysql.rds.aliyuncs.com"
-db = "test"
+db = "restaurant"
 user = "tsh"
 password = "tsh08040313@"
