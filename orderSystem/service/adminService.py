@@ -12,13 +12,29 @@ def check_empty(token : list) -> bool :
             return False
     return True
 
-def modify(dish_id:int,
+def broadcast(id:int) :
+    try :
+        if a.query_job(id)<2 :
+            return False,{}
+        if not a.query_login(id) :
+            return False,{}
+        ans,data=a.broadcast()
+    except Exception :
+        return 
+    return ans,data
+
+def modify(id:int,
+           dish_id:int,
            dish_name:str,
            price:float,
            recommend:str,
            description:str, 
            image:str) :
     try :
+        if a.query_job(id)<2 :
+            return False,{}
+        if not a.query_login(id) :
+            return False,{}
         if recommend=="特色菜" :
             recommend=1
         else :
@@ -35,6 +51,10 @@ def modify(dish_id:int,
 def put(id:int,
         content:str) :
     try :
+        if a.query_job(id)<2 :
+            return False
+        if not a.query_login(id) :
+            return False
         msg=a.put(id,content)
     except Exception :
         print("ERR put")
@@ -45,6 +65,10 @@ def finish(id:int,
     是否免单:str,
     结账金额:float) :
     try :
+        if a.query_job(id)<2 :
+            return False,{}
+        if not a.query_login(id) :
+            return False,{}
         msg,data=a.finish(id, 订单号, 是否免单, 结账金额)
     except Exception :
         msg=False
@@ -52,9 +76,14 @@ def finish(id:int,
         print("ERR finish")
     return msg,data
 
-def query(id:int) :
+def query(id:int,
+          菜品id:int) :
     try :
-        msg,data=a.query(id)
+        if a.query_job(id)<2 :
+            return False,{}
+        if not a.query_login(id) :
+            return False,{}
+        msg,data=a.query(菜品id)
         if data["是否推荐"] :
             data["是否推荐"]="特色菜"
         else :
@@ -62,16 +91,20 @@ def query(id:int) :
     except Exception :
         print("ERR query")
     return msg,data
-    
 
-def show() :
+def show(id:int) :
     try :
+        if a.query_job(id)<2 :
+            return False,[]
+        if not a.query_login(id) :
+            return False,[]
         msg,data=a.show()
         for item in data :
             cnt=0
             for dish in item["订单内容"] :
                 cnt+=int(dish["数量"])
             item.update({"菜品总数":cnt})
+        print(data)
     except Exception :
         print("ERR show")
     return msg,data
@@ -79,6 +112,10 @@ def show() :
 def delete(id:int,
            菜品id:int) :
     try :
+        if a.query_job(id)<2 :
+            return False
+        if not a.query_login(id) :
+            return False
         msg=a.delete(id,菜品id)
     except Exception :
         print("ERR delete")
@@ -91,6 +128,10 @@ def add(id:int,
         简介:str,
         图片:str) :
     try :
+        if a.query_job(id)<2 :
+            return False,{}
+        if not a.query_login(id) :
+            return False,{}
         if 是否推荐=="特色菜" :
             是否推荐=1
         else :
@@ -114,16 +155,23 @@ def create_user(管理员id:int,
                 身份:str,
                 图片:str) :
     try :
+        admin_job:int = a.query_job(管理员id)
+        if admin_job<2 :
+            return False,{}
+        if not a.query_login(管理员id) :
+            return False,{}
         if 密码!=确认密码 :
             return False,{}
-        if 身份=="管理员" :
+        if admin_job==2 and 身份=="管理员":
             return False,{}
         if not a.query_same_name(创建用户名) :
             return False,{}
         if 身份=="点餐员" :
             job=1
-        else :
+        elif 身份=="后厨" :
             job=0
+        else :
+            job=2
         msg,id=a.create_user(管理员id,创建用户名,密码,job,图片)
         if msg :
             data={"员工id":id,"用户名":创建用户名,"身份":身份}
@@ -152,15 +200,24 @@ def delete_user(管理员id:int,
 
     """
     try :
-        job=a.query_job(被删除id)
-        if job==-1 or job==2 or job==3 :
+        admin_job:int = a.query_job(管理员id)
+        user_job:int = a.query_job(被删除id)
+        if admin_job<2 :
+            return False
+        if not a.query_login(管理员id) :
+            return False
+        if admin_job==2 and user_job>=2 :
+            return False
+        if admin_job==3 and user_job==3 :
+            return False
+        if user_job==-1 :
             return False
         msg=a.delete_user(管理员id, 被删除id)
     except Exception :
         print("ERR delete user")
     return msg
 
-def show_user() :
+def show_user(id:int) :
     """
     对管理员展示所有用户的信息
 
@@ -173,6 +230,10 @@ def show_user() :
 
     """
     try :
+        if a.query_job(id)<2 :
+            return False,[]
+        if not a.query_login(id) :
+            return False,[]
         msg,data=a.show_user()
         for user in data :
             if user["身份"]==0 :
@@ -185,8 +246,35 @@ def show_user() :
         print("ERR show user")
     return msg,data
 
-def query_menu() :
+def modify_user(管理员id:int,
+                员工id:int,
+                用户名:str,
+                密码:str,
+                图片:str) :
     try :
+        admin_job:int = a.query_job(管理员id)
+        user_job:int = a.query_job(员工id)
+        if admin_job<2 :
+            return False
+        if not a.query_login(管理员id) :
+            return False
+        if admin_job==2 and user_job>=2 :
+            return False
+        a.empty_name(用户名)
+        if not a.query_same_name(用户名) :
+            return False
+        msg=a.modify_user(管理员id, 员工id, 用户名,密码, 图片)
+    except Exception:
+        msg=False
+        print("ERR show user")
+    return msg
+    
+def query_menu(id:int) :
+    try :
+        if a.query_job(id)<2 :
+            return False,[]
+        if not a.query_login(id) :
+            return False,[]
         menu=a.query_menu()
         data=[]
         for i in menu :
@@ -212,6 +300,8 @@ def query_menu() :
 
 def logout(id:int) :
     try :
+        if a.query_job(id)<2 :
+            return False
         msg=a.logout(id)
     except Exception:
         msg=False

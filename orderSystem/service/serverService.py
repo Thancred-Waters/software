@@ -3,8 +3,22 @@
 from orderSystem.dao.serverDao import s
 from datetime import datetime
 
+def check_valid_order(table:int,num:int,order:dict) -> bool :
+    if table<0 or table>20 :
+        return False
+    if num<0 or num>4 :
+        return False
+    if len(order)<=0 :
+        return False
+    for key,value in order :
+        if key=="" or value=="" :
+            return False
+    return True
+
 def place_order(table:int,id:int,num:int,order:dict) :
     try :
+        #if not check_valid_order(table, num, order) :
+        #    return False,{}
         if s.query_job(id)!=1 :
             return False,{}
         if not s.query_login(id) :
@@ -63,9 +77,7 @@ def buy(table:int,id:int) :
 def logout(id:int) :
     try :
         if s.query_job(id)!=1 :
-            return False,{}
-        if not s.query_login(id) :
-            return False,{}
+            return False
         ans=s.logout(id)
     except Exception :
         return False
@@ -109,3 +121,12 @@ def query_menu(id:int) :
         data=[]
         print("ERR query menu")
     return msg,data
+
+def pass_dish(id: int, table: int, name: str):
+    try:
+        s.confirm_pass(id, name, table)
+        msg = True
+    except Exception:
+        msg = False
+        print("ERR pass_dish")
+    return msg

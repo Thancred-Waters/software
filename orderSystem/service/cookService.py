@@ -1,30 +1,44 @@
 from orderSystem.dao.cookDao import c
 
-def show() :
+def show(id:int) :
     """
     返回菜品列表
     """
     try:
+        print(id,c.query_job(id))
+        if c.query_job(id) :
+            return False,{}
+        if not c.query_login(id) :
+            return False,{}
         ans,data=c.show()
     except Exception :
         pass
     return ans,data
 
-def confirm(table:int,name:str,num:int) :
+def confirm(id:int,table:int,name:str,num:int) :
     """
     返回后厨是否成功确认菜品
     """
     try:
+        print(id,c.query_job(id))
+        if c.query_job(id) :
+            return False
+        if not c.query_login(id) :
+            return False
         ans=c.confirm(table,name,num)
     except Exception :
         pass
     return ans
 
-def finish(table:int,name:str,num:int) :
+def finish(id:int,table:int,name:str,num:int) :
     """
     返回后厨是否成功结束菜品
     """
     try:
+        if c.query_job(id) :
+            return False
+        if not c.query_login(id) :
+            return False
         ans=c.finish(table,name,num)
     except Exception :
         pass
@@ -41,14 +55,17 @@ def window() :
         pass
     return ans,data
 
-def broadcast() :
+def broadcast(id:int) :
     """
     返回后厨是否收到历史公告信息，
     如果收到，同时返回公告
     """
     try:
+        if c.query_job(id) :
+            return False,[]
+        if not c.query_login(id) :
+            return False,[]
         ans,data=c.broadcast()
-        print(data)
     except Exception :
         pass
     return ans,data
@@ -69,6 +86,8 @@ def logout(id:int) :
 
     """
     try :
+        if c.query_job(id) :
+            return False
         ans=c.logout(id)
     except Exception :
         pass

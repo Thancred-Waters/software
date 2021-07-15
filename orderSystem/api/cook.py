@@ -19,6 +19,7 @@ router = APIRouter()
 
 class Confirm(BaseModel) :
     #后厨确认接到菜品订单/后厨完成对应菜品的制作
+    id:int = 0
     桌号:int = 0
     菜名:str = ""
     数量:int = 0
@@ -33,7 +34,7 @@ class Dish(BaseModel) :
 
 class Broadcast(BaseModel) :
     标题:str = ""
-    时间:datetime = datetime(2000,1,1)
+    时间:str = ""
     内容:str = ""
 
 class Res(BaseModel) :
@@ -52,10 +53,10 @@ class ResConfirm(Res) :
 class ResBroad(Res) :
     data:List[Broadcast] = list()
 
-@router.get("/show",response_model=ResDish)
-async def show() :
+@router.post("/show",response_model=ResDish)
+async def show(id:int = Body(...,embed=True)) :
     #获取所有订单信息
-    msg,data=cookService.show() 
+    msg,data=cookService.show(id) 
     res=ResDish()
     res.code=9
     res.msg=msg
@@ -65,7 +66,7 @@ async def show() :
 @router.post("/confirm",response_model=ResConfirm)
 async def confirm(con:Confirm) :
     #确认菜品订单已收到
-    ans=cookService.confirm(con.桌号, con.菜名, con.数量)
+    ans=cookService.confirm(con.id,con.桌号, con.菜名, con.数量)
     res=ResConfirm()
     res.code=10
     res.msg=ans
@@ -75,7 +76,7 @@ async def confirm(con:Confirm) :
 @router.post("/finish",response_model=ResConfirm)
 async def finish(con:Confirm) :
     #确认菜品订单已完成
-    ans=cookService.finish(con.桌号, con.菜名, con.数量)
+    ans=cookService.finish(con.id,con.桌号, con.菜名, con.数量)
     res=ResConfirm()
     res.code=11
     res.msg=ans
@@ -92,10 +93,10 @@ async def window() :
     res.data=data
     return res
 
-@router.get("/broadcast",response_model=ResBroad)
-async def broadcast() :
+@router.post("/broadcast",response_model=ResBroad)
+async def broadcast(id:int = Body(...,embed=True)) :
     #发送驻留公告
-    ans,data=cookService.broadcast()
+    ans,data=cookService.broadcast(id)
     res=ResBroad()
     res.code=13
     res.msg=ans

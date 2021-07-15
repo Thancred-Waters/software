@@ -57,7 +57,7 @@ class admin():
             with self.conn.cursor() as cursor:
                 sql = "SELECT PEOPLE_NAME FROM EMPLOYEE WHERE ID =%d;"
                 cursor.execute(sql % id)
-                name = cursor.fetchall()[0][0]
+                name = cursor.fetchone()[0]
                 sql = 'INSERT INTO NOTICE(NOTICE, CREATE_TIME, NAME, STATE) VALUES("%s", "%s", "%s", 0);'
                 cursor.execute(sql % (content, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name))
             self.conn.commit()
@@ -189,7 +189,7 @@ class admin():
                 cursor.execute(sql % (employee_name,password,photo,job,0))
                 sql = "select id from EMPLOYEE order by id desc;"
                 cursor.execute(sql)
-                res=cursor.fetchall()[0][0]
+                res=cursor.fetchone()[0]
             self.conn.commit()
             ans = True
         except Exception:
@@ -229,10 +229,50 @@ class admin():
         else:
             for i in range(len(results)):
                 data.append({'员工id':results[i][0],'用户名':results[i][1],
-                             '图片':results[i][3],'身份':results[i][4]})
+                             '图片':results[i][3],'身份':results[i][4],
+                             '密码':results[i][2]})
         finally:
             self.conn.close()
         return ans,data
+    
+    def modify_user(self,admin_id:int,user_id:int,name:str,
+                    pd:str,pic:str) :
+        try :
+            self.reconnect()
+            with self.conn.cursor() as cursor :
+                print(name)
+                sql = "update employee set PEOPLE_NAME='%s',LOGIN_PASSWORD='%s',PHOTO='%s' where ID=%d;"
+                cursor.execute(sql % (name,pd,pic,user_id))
+            self.conn.commit()
+            ans=True
+        except Exception :
+            self.conn.rollback()
+            ans=False
+        finally :
+            self.conn.close()
+        return ans
+    
+    def broadcast(self):
+        """
+        :return: 返回最近发布的公告
+        """
+        msg = list()
+        try:
+            self.reconnect()
+            with self.conn.cursor() as cursor:
+                sql = "SELECT * FROM NOTICE ORDER BY CREATE_TIME DESC;"
+                cursor.execute(sql)
+                results = cursor.fetchall()
+            ans = True
+        except Exception:
+            self.conn.rollback()
+            ans = False
+        else:
+            for i in range(len(results)):
+                msg.append({'标题': results[i][2],'时间': results[i][1],'内容': results[i][0]})
+        finally:
+            self.conn.close()
+        return ans, msg
     
     def query_menu(self) :
         try :
@@ -247,6 +287,36 @@ class admin():
         finally:
             self.conn.close()
         return res
+    
+    def empty_name(self,name:str):
+        """
+        
+        查询是否有相同的用户名
+        Parameters
+        ----------
+        name : str
+            DESCRIPTION.
+
+        Returns
+        -------
+        bool 
+            True->有相同用户名
+            False->没有相同用户名.
+
+        """
+        try :
+            self.reconnect()
+            with self.conn.cursor() as cursor :
+                sql="update employee set people_name='' where people_name='%s';"
+                cursor.execute(sql % name)
+            self.conn.commit()
+            ans=True
+        except Exception:
+            self.conn.rollback()
+            ans=False
+        finally :
+            self.conn.close()
+        return ans
     
     def query_same_name(self,name:str) -> bool :
         """
@@ -274,7 +344,6 @@ class admin():
             self.conn.commit()
         except Exception:
             ans=True
-            print("Fail")
             self.conn.rollback()
         finally :
             self.conn.close()

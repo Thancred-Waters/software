@@ -223,3 +223,19 @@ async def query_menu(id:int = Body(...,embed=True)) :
     res.msg=msg
     res.data=data
     return res
+
+@router.post("/pass_dish", response_model=Res)
+async def pass_dish(id: int = Body(...,embed=True), 
+                    table: int = Body(...,embed=True), 
+                    name: str = Body(...,embed=True)):
+    """
+    :param id: 员工id号
+    :param table: 订单卓号
+    :param name: 被传递的菜品名称
+    :return: 处理是否成功
+    """
+    msg = serverService.pass_dish(id,table,name)
+    res = Res()
+    res.msg = msg
+    res.code = 20
+    return res

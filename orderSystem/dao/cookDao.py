@@ -59,12 +59,13 @@ class cook():
         """
         try:
             self.reconnect()
+            print("okkkk")
             with self.conn.cursor() as cursor:
                 sql = "select create_time from DISH where table_number=%d AND dish_name='%s' AND dish_number=%d AND STATE=0 order by create_time asc;"
                 cursor.execute(sql % (TABLE_NUMBER, DISH_NAME, DISH_NUMBER))
                 t = cursor.fetchone()[0]
                 print(t)
-                sql = "UPDATE DISH SET STATE = 1 WHERE CREATE_TIME='%s' AND TABLE_NUMBER = '%d' AND DISH_NAME = '%s' AND DISH_NUMBER = '%d' AND STATE=0;"
+                sql = "UPDATE DISH SET STATE = 1 WHERE CREATE_TIME='%s' AND TABLE_NUMBER = %d AND DISH_NAME = '%s' AND DISH_NUMBER = %d AND STATE=0;"
                 cursor.execute(sql % (t,TABLE_NUMBER, DISH_NAME, DISH_NUMBER))
             self.conn.commit()
             ans = True
@@ -143,8 +144,11 @@ class cook():
             self.conn.rollback()
             ans = False
         else:
-            for i in range(min(5,len(results))):
-                msg.append({'标题': results[i][2],'时间': results[i][1],'内容': results[i][0]})
+            now=datetime.now()
+            for i in range(len(results)):
+                if now.day-results[i][1].day>=3 :
+                    continue
+                msg.append({'标题': results[i][2],'时间': results[i][1].strftime("%Y-%m-%d %H:%M:%S"),'内容': results[i][0]})
         finally:
             self.conn.close()
         return ans, msg
@@ -175,6 +179,7 @@ class cook():
             with self.conn.cursor() as cursor :
                 sql="select JOB from EMPLOYEE where ID=%d;"
                 cursor.execute(sql % id)
+                print("dddddddddddddddddddd")
                 job=cursor.fetchone()[0]
             self.conn.commit()
         except Exception :

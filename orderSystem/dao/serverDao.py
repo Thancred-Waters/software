@@ -72,7 +72,10 @@ class Server():
                         sql = "SELECT ID FROM DISH WHERE TABLE_NUMBER = '%d' ORDER BY ID DESC;"
                         cursor.execute(sql % (TABLE_NUMBER))
                         id = cursor.fetchall()
-                        dish_id = int(id[0][0])
+                        if len(id)==0 :
+                            dish_id = 1
+                        else :
+                            dish_id = int(id[0][0])
                     sql = 'SELECT PRICE FROM MENU WHERE DISH_NAME= "%s";'
                     cursor.execute(sql % (i))
                     dish_price = cursor.fetchall()
@@ -137,7 +140,10 @@ class Server():
             self.conn.rollback()
             ans = False
         else:
-            for i in range(min(5,len(results))):
+            now=datetime.now()
+            for i in range(len(results)) :
+                if now.day-results[i][1].day>=3 :
+                    continue
                 msg.append({'标题': results[i][2],'时间': results[i][1],'内容': results[i][0]})
         finally:
             self.conn.close()
@@ -176,7 +182,7 @@ class Server():
                             sum_price+=float(dish[j][7])
                         #print("OKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
                         #print(dish_order)
-                        state_inter={0:'未使用',1:'正在用餐',2:'等待支付'}
+                        state_inter={0:'未使用',1:'用餐中',2:'待支付'}
                         data.append({'桌号':dish[0][1],'下单时间':dish[0][4],
                                      '金额':sum_price,'人数':dish[0][2],
                                      '订单状态':state_inter[int(state[i][1])],
@@ -348,5 +354,21 @@ class Server():
         finally:
             self.conn.close()
         return res
+    
+    def confirm_pass(self,EMPLOYEE_ID:int,DISH_NAME:str,TABLE_NUMBER:int):
+        try:
+            self.reconnect()
+            with self.conn.cursor() as cursor:
+                sql = 'UPDATE DISH SET STATE = 3 WHERE employee = %d and table_number = %d and DISH_NAME = "%s";'
+                cursor.execute(sql % (EMPLOYEE_ID,TABLE_NUMBER,DISH_NAME))
+            self.conn.commit()
+            ans = True
+        except Exception:
+            self.conn.rollback()
+            ans = False
+        finally:
+            self.conn.close()
+        return ans
+
 
 s = Server()
