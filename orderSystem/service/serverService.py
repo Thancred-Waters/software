@@ -4,9 +4,9 @@ from orderSystem.dao.serverDao import s
 from datetime import datetime
 
 def check_valid_order(table:int,num:int,order:dict) -> bool :
-    if table<0 or table>20 :
+    if table<=0 or table>20 :
         return False
-    if num<0 or num>4 :
+    if num<=0 or num>10 :
         return False
     if len(order)<=0 :
         return False
