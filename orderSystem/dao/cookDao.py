@@ -59,12 +59,10 @@ class cook():
         """
         try:
             self.reconnect()
-            print("okkkk")
             with self.conn.cursor() as cursor:
                 sql = "select create_time from DISH where table_number=%d AND dish_name='%s' AND dish_number=%d AND STATE=0 order by create_time asc;"
                 cursor.execute(sql % (TABLE_NUMBER, DISH_NAME, DISH_NUMBER))
                 t = cursor.fetchone()[0]
-                print(t)
                 sql = "UPDATE DISH SET STATE = 1 WHERE CREATE_TIME='%s' AND TABLE_NUMBER = %d AND DISH_NAME = '%s' AND DISH_NUMBER = %d AND STATE=0;"
                 cursor.execute(sql % (t,TABLE_NUMBER, DISH_NAME, DISH_NUMBER))
             self.conn.commit()
@@ -179,7 +177,6 @@ class cook():
             with self.conn.cursor() as cursor :
                 sql="select JOB from EMPLOYEE where ID=%d;"
                 cursor.execute(sql % id)
-                print("dddddddddddddddddddd")
                 job=cursor.fetchone()[0]
             self.conn.commit()
         except Exception :

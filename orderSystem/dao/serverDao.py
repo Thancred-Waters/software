@@ -41,8 +41,7 @@ class Server():
         """
         try:
             self.reconnect()
-            for i in order.keys():
-                print(i)
+            for i in order.keys() :
                 """
                 i:DISH_NAME
                 order[i]:DISH_NUMBER
@@ -59,11 +58,15 @@ class Server():
                     sql = 'SELECT TABLE_STATE FROM STATE WHERE TABLE_NUMBER= "%d";'
                     cursor.execute(sql % (TABLE_NUMBER))
                     state = cursor.fetchall()
+                    print(state)
                     if len(state) and (int(state[0][0]) == 0):
                         sql = "SELECT ID FROM DISH ORDER BY ID DESC;"
                         cursor.execute(sql)
                         id = cursor.fetchall()
-                        dish_id = int(id[0][0]) + 1
+                        if len(id)==0 :
+                            dish_id=1
+                        else :
+                            dish_id = int(id[0][0]) + 1
                         # 改变桌子状态
                         sql = "UPDATE STATE SET TABLE_STATE = 1 WHERE TABLE_NUMBER = '%d';"
                         cursor.execute(sql % (TABLE_NUMBER))
@@ -75,7 +78,6 @@ class Server():
                             dish_id = 1
                         else :
                             dish_id = int(id[0][0])
-                    print(dish_id)
                     sql = 'SELECT PRICE FROM MENU WHERE DISH_NAME= "%s";'
                     cursor.execute(sql % (i))
                     dish_price = cursor.fetchall()
@@ -136,11 +138,8 @@ class Server():
                 cursor.execute(sql)
                 results = cursor.fetchall()   
             now=datetime.now()
-            print(results)
             for i in range(len(results)) :
-                print(results[i][1])
                 cur=datetime.strptime(results[i][1], "%Y-%m-%d %H:%M:%S")
-                print(results[i][1])
                 if now.day-cur.day>=3 :
                     continue
                 msg.append({'标题': results[i][2],'时间': cur.strftime("%Y-%m-%d %H:%M:%S"),'内容': results[i][0]})
@@ -164,19 +163,16 @@ class Server():
                 sql = "SELECT * FROM STATE WHERE TABLE_STATE!=0;"
                 cursor.execute(sql)
                 state = cursor.fetchall()
-                print(state)
                 for i in range(len(state)):
                     #此处使用try-except捕获异常，保证抓取所有数据
                     try :
                         table_number=state[i][0]
                         sql = "SELECT ID FROM DISH WHERE TABLE_NUMBER=%d ORDER BY ID DESC;"
                         cursor.execute(sql % int(table_number))
-                        id = cursor.fetchall()[0][0]
-                        print(id,type(id))
+                        id = cursor.fetchone()[0]
                         sql = "SELECT * FROM DISH WHERE ID=%d order by create_time asc;"
                         cursor.execute(sql % int(id))
                         dish= cursor.fetchall()
-                        print(dish)
                         dish_order=[]
                         sum_price=0
                         #print("*********************************************")
@@ -191,7 +187,6 @@ class Server():
                                      '订单状态':state_inter[int(state[i][1])],
                                      '订单内容':dish_order})     
                         #print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
-                        print(data)
                     except Exception :
                         print("warning: server show")
                 ans = True
@@ -355,8 +350,8 @@ class Server():
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
-                sql = 'UPDATE DISH SET STATE = 3 WHERE employee=%d and table_number = %d and DISH_NAME = "%s";'
-                cursor.execute(sql % (EMPLOYEE_ID,TABLE_NUMBER,DISH_NAME))
+                sql = 'UPDATE DISH SET STATE = 3 WHERE table_number = %d and DISH_NAME = "%s";'
+                cursor.execute(sql % (TABLE_NUMBER,DISH_NAME))
             self.conn.commit()
             ans = True
         except Exception:
@@ -365,6 +360,5 @@ class Server():
         finally:
             self.conn.close()
         return ans
-
 
 s = Server()

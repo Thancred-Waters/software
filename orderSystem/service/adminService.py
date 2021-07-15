@@ -136,7 +136,6 @@ def add(id:int,
             是否推荐=1
         else :
             是否推荐=0
-        print(是否推荐)
         if not a.query_same_dish(菜名) :
             msg=False
             data={}

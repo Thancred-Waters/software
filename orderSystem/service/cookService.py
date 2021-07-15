@@ -5,7 +5,6 @@ def show(id:int) :
     返回菜品列表
     """
     try:
-        print(id,c.query_job(id))
         if c.query_job(id) :
             return False,{}
         if not c.query_login(id) :

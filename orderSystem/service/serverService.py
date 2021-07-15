@@ -119,6 +119,7 @@ def query_menu(id:int) :
 
 def pass_dish(id: int, table: int, name: str):
     try:
+        print(id,table,name)
         s.confirm_pass(id, name, table)
         msg = True
     except Exception:

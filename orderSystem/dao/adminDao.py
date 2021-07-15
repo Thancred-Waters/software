@@ -59,7 +59,7 @@ class admin():
                 cursor.execute(sql % id)
                 name = cursor.fetchone()[0]
                 sql = 'INSERT INTO NOTICE(NOTICE, CREATE_TIME, NAME, STATE) VALUES("%s", "%s", "%s", 0);'
-                cursor.execute(sql % (content, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), name))
+                cursor.execute(sql % (content, datetime.now().strftime("%Y-%m-%d %H:%M:%S"),name))
             self.conn.commit()
             ans = True
         except Exception:
@@ -78,7 +78,7 @@ class admin():
             self.reconnect()
             with self.conn.cursor() as cursor:
                 sql = 'UPDATE STATE SET TABLE_STATE=0 WHERE TABLE_NUMBER=%d;'
-                cursor.execute(sql % (TABLE_NUMBER))
+                cursor.execute(sql % int(TABLE_NUMBER))
             self.conn.commit()
             ans = True
         except Exception:
@@ -134,7 +134,7 @@ class admin():
                         sum_price += float(dish[j][7])
                     state_inter = {0: '未使用', 1: '正在用餐', 2: '等待支付'}
                     data.append({'桌号': dish[0][1], '下单时间': dish[0][4], '金额': sum_price,
-                                 '人数': dish[0][2], '订单状态': state_inter[state[i][1]], '订单内容': dish_order})
+                                 '人数': dish[0][2], '订单状态': state_inter[int(state[i][1])], '订单内容': dish_order})
             ans = True
         except Exception:
             self.conn.rollback()
@@ -170,7 +170,6 @@ class admin():
                 sql = "select ID from MENU order by ID DESC;"
                 cursor.execute(sql)
                 dish_id=cursor.fetchone()[0]
-                print(dish_id)
             self.conn.commit()
             ans = True
         except Exception:
@@ -368,16 +367,13 @@ class admin():
             print(name)
             self.reconnect()
             with self.conn.cursor() as cursor :
-                print("kccccccccsdokcosdkok")
                 sql="select dish_name from MENU where dish_name='%s';"
-                print("dccccccccc")
                 cursor.execute(sql % name)
                 print(cursor.fetchone()[0])
             ans=False
             self.conn.commit()
         except Exception:
             ans=True
-            print("Fail")
             self.conn.rollback()
         finally :
             self.conn.close()
