@@ -10,15 +10,12 @@ def check_valid_order(table:int,num:int,order:dict) -> bool :
         return False
     if len(order)<=0 :
         return False
-    for key,value in order :
-        if key=="" or value=="" :
-            return False
     return True
 
 def place_order(table:int,id:int,num:int,order:dict) :
     try :
-        #if not check_valid_order(table, num, order) :
-        #    return False,{}
+        if not check_valid_order(table, num, order) :
+            return False,{}
         if s.query_job(id)!=1 :
             return False,{}
         if not s.query_login(id) :

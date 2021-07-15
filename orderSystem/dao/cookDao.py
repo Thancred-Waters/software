@@ -139,16 +139,16 @@ class cook():
                 sql = "SELECT * FROM NOTICE ORDER BY CREATE_TIME DESC;"
                 cursor.execute(sql)
                 results = cursor.fetchall()
+            now=datetime.now()
+            for i in range(len(results)):
+                cur=datetime.strptime(results[i][1], "%Y-%m-%d %H:%M:%S")
+                if now.day-cur.day>=3 :
+                    continue
+                msg.append({'标题': results[i][2],'时间': cur.strftime("%Y-%m-%d %H:%M:%S"),'内容': results[i][0]})
             ans = True
         except Exception:
             self.conn.rollback()
             ans = False
-        else:
-            now=datetime.now()
-            for i in range(len(results)):
-                if now.day-results[i][1].day>=3 :
-                    continue
-                msg.append({'标题': results[i][2],'时间': results[i][1].strftime("%Y-%m-%d %H:%M:%S"),'内容': results[i][0]})
         finally:
             self.conn.close()
         return ans, msg

@@ -59,11 +59,10 @@ class Server():
                     sql = 'SELECT TABLE_STATE FROM STATE WHERE TABLE_NUMBER= "%d";'
                     cursor.execute(sql % (TABLE_NUMBER))
                     state = cursor.fetchall()
-                    if len(state) and (state[0][0] == 0):
+                    if len(state) and (int(state[0][0]) == 0):
                         sql = "SELECT ID FROM DISH ORDER BY ID DESC;"
                         cursor.execute(sql)
                         id = cursor.fetchall()
-                        # print(id)
                         dish_id = int(id[0][0]) + 1
                         # 改变桌子状态
                         sql = "UPDATE STATE SET TABLE_STATE = 1 WHERE TABLE_NUMBER = '%d';"
@@ -76,6 +75,7 @@ class Server():
                             dish_id = 1
                         else :
                             dish_id = int(id[0][0])
+                    print(dish_id)
                     sql = 'SELECT PRICE FROM MENU WHERE DISH_NAME= "%s";'
                     cursor.execute(sql % (i))
                     dish_price = cursor.fetchall()
@@ -134,17 +134,20 @@ class Server():
             with self.conn.cursor() as cursor:
                 sql = "SELECT * FROM NOTICE ORDER BY CREATE_TIME DESC;"
                 cursor.execute(sql)
-                results = cursor.fetchall()
+                results = cursor.fetchall()   
+            now=datetime.now()
+            print(results)
+            for i in range(len(results)) :
+                print(results[i][1])
+                cur=datetime.strptime(results[i][1], "%Y-%m-%d %H:%M:%S")
+                print(results[i][1])
+                if now.day-cur.day>=3 :
+                    continue
+                msg.append({'标题': results[i][2],'时间': cur.strftime("%Y-%m-%d %H:%M:%S"),'内容': results[i][0]})
             ans = True
         except Exception:
             self.conn.rollback()
-            ans = False
-        else:
-            now=datetime.now()
-            for i in range(len(results)) :
-                if now.day-results[i][1].day>=3 :
-                    continue
-                msg.append({'标题': results[i][2],'时间': results[i][1],'内容': results[i][0]})
+            ans = False  
         finally:
             self.conn.close()
         return ans, msg
@@ -161,7 +164,7 @@ class Server():
                 sql = "SELECT * FROM STATE WHERE TABLE_STATE!=0;"
                 cursor.execute(sql)
                 state = cursor.fetchall()
-                #print(state)
+                print(state)
                 for i in range(len(state)):
                     #此处使用try-except捕获异常，保证抓取所有数据
                     try :
@@ -169,11 +172,11 @@ class Server():
                         sql = "SELECT ID FROM DISH WHERE TABLE_NUMBER=%d ORDER BY ID DESC;"
                         cursor.execute(sql % int(table_number))
                         id = cursor.fetchall()[0][0]
-                        #print(id,type(id))
+                        print(id,type(id))
                         sql = "SELECT * FROM DISH WHERE ID=%d order by create_time asc;"
                         cursor.execute(sql % int(id))
                         dish= cursor.fetchall()
-                        #print(dish)
+                        print(dish)
                         dish_order=[]
                         sum_price=0
                         #print("*********************************************")
@@ -181,7 +184,7 @@ class Server():
                             dish_order.append({"菜品名称":dish[j][5],'数量':dish[j][6],'价格':float(dish[j][7])})
                             sum_price+=float(dish[j][7])
                         #print("OKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
-                        #print(dish_order)
+                        print(dish_order)
                         state_inter={0:'未使用',1:'用餐中',2:'待支付'}
                         data.append({'桌号':dish[0][1],'下单时间':dish[0][4],
                                      '金额':sum_price,'人数':dish[0][2],
@@ -318,14 +321,7 @@ class Server():
         try:
             self.reconnect()
             with self.conn.cursor() as cursor :
-                sql = """
-                SELECT * FROM DISH
-                INNER JOIN STATE
-                ON DISH.STATE=2
-                AND STATE.TABLE_STATE=1
-                AND STATE.TABLE_NUMBER=DISH.TABLE_NUMBER
-                ORDER BY DISH.CREATE_TIME DESC;
-                """
+                sql = "SELECT * FROM DISH WHERE DISH.STATE=2 ORDER BY DISH.CREATE_TIME DESC;"
                 cursor.execute(sql)
                 finished_dish = cursor.fetchall()
                 for j in range(len(finished_dish)):
@@ -359,7 +355,7 @@ class Server():
         try:
             self.reconnect()
             with self.conn.cursor() as cursor:
-                sql = 'UPDATE DISH SET STATE = 3 WHERE employee = %d and table_number = %d and DISH_NAME = "%s";'
+                sql = 'UPDATE DISH SET STATE = 3 WHERE employee=%d and table_number = %d and DISH_NAME = "%s";'
                 cursor.execute(sql % (EMPLOYEE_ID,TABLE_NUMBER,DISH_NAME))
             self.conn.commit()
             ans = True
