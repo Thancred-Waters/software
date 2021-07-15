@@ -27,7 +27,23 @@ class login():
             self.conn.close()
         except Exception:
             pass
-        
+    
+    def checkCook(self) :
+        try :
+            self.reconnect()
+            with self.conn.cursor() as cursor:
+                sql="select * from employee where state=1 and job=0;"
+                cursor.execute(sql);
+                cursor.fetchone()[0]
+            ans=True
+            self.conn.commit()
+        except Exception :
+            ans=False
+            self.conn.rollback()
+        finally :
+            self.conn.close()
+        return ans
+            
     def getList(self) :
         try :
             self.reconnect()

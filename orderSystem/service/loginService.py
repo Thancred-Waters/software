@@ -26,12 +26,15 @@ def login(name:str,password:str) :
             if user[1]==name and user[2]==password :
                 id = user[0]; job=user[4]
                 break
-        if id==-1 :
+        if id==-1:
             if not l.query_login(name) :
                 job=-2
             msg = False
             pic = ""
         else :
-            msg = l.login(id)
+            if job==0 and l.checkCook() :
+                msg=False
+            else :
+                msg = l.login(id)
             pic = l.getPhoto(id) if msg else ""
     return msg,{'id':id,'name':name,'job':job,'pic':pic}

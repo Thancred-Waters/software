@@ -86,8 +86,6 @@ def logout(id:int) :
 
     """
     try :
-        if c.query_job(id) :
-            return False
         ans=c.logout(id)
     except Exception :
         pass

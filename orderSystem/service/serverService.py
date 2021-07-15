@@ -73,8 +73,6 @@ def buy(table:int,id:int) :
 
 def logout(id:int) :
     try :
-        if s.query_job(id)!=1 :
-            return False
         ans=s.logout(id)
     except Exception :
         return False

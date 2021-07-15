@@ -10,7 +10,7 @@ from orderSystem.service import loginService
 from fastapi import APIRouter
 
 from pydantic import BaseModel
-from typing import Optional,List
+from typing import Optional
 
 router=APIRouter()
 

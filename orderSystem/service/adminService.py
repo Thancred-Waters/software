@@ -300,8 +300,6 @@ def query_menu(id:int) :
 
 def logout(id:int) :
     try :
-        if a.query_job(id)<2 :
-            return False
         msg=a.logout(id)
     except Exception:
         msg=False
