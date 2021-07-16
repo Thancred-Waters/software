@@ -12,8 +12,8 @@ app.mount("/static", StaticFiles(directory="./pic"), name="static")
 
 #配置跨域
 origins = ["*",
-           "http://192.168.1.121",
-           "http://rm-bp1565i7xkloy1o23wo.mysql.rds.aliyuncs.com"
+           "192.168.1.121",
+           "rm-bp1565i7xkloy1o23wo.mysql.rds.aliyuncs.com"
            ]  
 
 app.add_middleware(

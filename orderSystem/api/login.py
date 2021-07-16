@@ -35,6 +35,20 @@ class UserOut(BaseModel) :
 
 @router.post("/",response_model=UserOut)
 async def login(user : UserIn) :
+    """
+    
+    处理用户登录请求，不允许重复登录，且后厨同一时间只有一个账户能够登录
+    Parameters
+    ----------
+    user : UserIn
+        用户信息.
+
+    Returns
+    -------
+    res : TYPE
+        登录结果.
+
+    """
     msg,data=loginService.login(user.name,user.password)
     res=dict({'code':1})
     res.update({'msg':msg})

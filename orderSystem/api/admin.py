@@ -123,6 +123,22 @@ async def modify(mod:Modify_Content) :
 @router.post('/put',response_model=Res)
 async def put(id:int = Body(...,embed=True),
               content:str = Body(...,embed=True)) :
+    """
+    
+    发布公告
+    Parameters
+    ----------
+    id : int, optional
+        发布者ID. The default is Body(...,embed=True).
+    content : str, optional
+        公告内容. The default is Body(...,embed=True).
+
+    Returns
+    -------
+    res : TYPE
+        发布结果.
+
+    """
     msg=adminService.put(id,content)
     res=Res()
     res.msg=msg
@@ -130,6 +146,20 @@ async def put(id:int = Body(...,embed=True),
 
 @router.post('/finish',response_model=Res_Finish)
 async def finish(fin:Finish) :
+    """
+    
+    处理买单请求
+    Parameters
+    ----------
+    fin : Finish
+        买单内容.
+
+    Returns
+    -------
+    res : TYPE
+        买单结果.
+
+    """
     msg,data=adminService.finish(*fin.dict().values())
     res=Res_Finish()
     res.msg=msg
@@ -139,6 +169,22 @@ async def finish(fin:Finish) :
 @router.post('/query',response_model=Res_Modify)
 async def query(id:int = Body(...,embed=True),
                 菜品id:int = Body(...,embed=True)) :
+    """
+    查询菜品详情
+
+    Parameters
+    ----------
+    id : int, optional
+        管理员ID. The default is Body(...,embed=True).
+    菜品id : int, optional
+        被查询菜品ID. The default is Body(...,embed=True).
+
+    Returns
+    -------
+    res : TYPE
+        菜品详情.
+
+    """
     msg,data=adminService.query(id,菜品id)
     res=Res_Modify()
     res.msg=msg
@@ -147,6 +193,20 @@ async def query(id:int = Body(...,embed=True),
 
 @router.post('/show',response_model=Res_Show)
 async def show(id:int = Body(...,embed=True)) :
+    """
+    展示菜单
+    
+    Parameters
+    ----------
+    id : int, optional
+        管理员ID. The default is Body(...,embed=True).
+
+    Returns
+    -------
+    res : TYPE
+        菜单内容.
+
+    """
     msg,data=adminService.show(id)
     res=Res_Show()
     res.msg=msg
@@ -156,6 +216,22 @@ async def show(id:int = Body(...,embed=True)) :
 @router.post('/delete',response_model=Res)
 async def delete(id:int = Body(...,embed=True),
                  菜品id:int = Body(...,embed=True)) :
+    """
+    删除菜品
+
+    Parameters
+    ----------
+    id : int, optional
+        管理员ID. The default is Body(...,embed=True).
+    菜品id : int, optional
+        被删除菜品ID. The default is Body(...,embed=True).
+
+    Returns
+    -------
+    res : TYPE
+        删除结果.
+
+    """
     msg=adminService.delete(id, 菜品id)
     res=Res()
     res.msg=msg
@@ -163,6 +239,20 @@ async def delete(id:int = Body(...,embed=True),
 
 @router.post('/add',response_model=Res_Finish)
 async def add(am:Add_Menu) :
+    """
+    添加菜品
+
+    Parameters
+    ----------
+    am : Add_Menu
+        菜品详细信息.
+
+    Returns
+    -------
+    res : TYPE
+        添加结果.
+
+    """
     res=Res_Finish(msg=False)
     if adminService.check_empty(am.dict().values()) : 
         msg,data=adminService.add(*am.dict().values())
@@ -172,6 +262,20 @@ async def add(am:Add_Menu) :
 
 @router.post('/upload_pic',response_model=Res)
 async def upload_pic(file:UploadFile = File(...)) :
+    """
+    
+    上传图片
+    Parameters
+    ----------
+    file : UploadFile, optional
+        图片. The default is File(...).
+
+    Returns
+    -------
+    res : TYPE
+        上传结果.
+
+    """
     try :
         with open('./pic/'+file.filename,"wb") as f :
             f.write(await file.read())
@@ -184,6 +288,20 @@ async def upload_pic(file:UploadFile = File(...)) :
 
 @router.post('/create_user',response_model=Res_Finish)
 async def create_user(cr:Create_User) :
+    """
+    
+    创建用户
+    Parameters
+    ----------
+    cr : Create_User
+        用户信息.
+
+    Returns
+    -------
+    res : TYPE
+        创建结果.
+
+    """
     res=Res_Finish(msg=False)
     if adminService.check_empty(cr.dict().values()) :
         msg,data=adminService.create_user(*cr.dict().values())
@@ -194,6 +312,22 @@ async def create_user(cr:Create_User) :
 @router.post('/delete_user',response_model=Res)
 async def delete_user(管理员id:int = Body(...,embed=True),
                       被删除id:int = Body(...,embed=True)) :
+    """
+    
+    管理员删除用户
+    Parameters
+    ----------
+    管理员id : int, optional
+        DESCRIPTION. The default is Body(...,embed=True).
+    被删除id : int, optional
+        DESCRIPTION. The default is Body(...,embed=True).
+
+    Returns
+    -------
+    res : TYPE
+        删除结果.
+
+    """
     msg=adminService.delete_user(管理员id, 被删除id)
     res=Res()
     res.msg=msg
@@ -201,6 +335,20 @@ async def delete_user(管理员id:int = Body(...,embed=True),
 
 @router.post('/show_user',response_model=Res_Show)
 async def show_user(id:int = Body(...,embed=True)) :
+    """
+    
+    展示用户
+    Parameters
+    ----------
+    id : int, optional
+        用户ID. The default is Body(...,embed=True).
+
+    Returns
+    -------
+    res : TYPE
+        用户具体信息.
+
+    """
     msg,data=adminService.show_user(id)
     res=Res_Show()
     res.msg=msg
@@ -209,6 +357,20 @@ async def show_user(id:int = Body(...,embed=True)) :
 
 @router.post('/query_menu',response_model=Res_Show)
 async def query_menu(id:int = Body(...,embed=True)) :
+    """
+    
+    查询菜单
+    Parameters
+    ----------
+    id : int, optional
+        管理员ID. The default is Body(...,embed=True).
+
+    Returns
+    -------
+    res : TYPE
+        菜品详情.
+
+    """
     msg,data=adminService.query_menu(id)
     res=Res_Show()
     res.msg=msg
@@ -217,6 +379,20 @@ async def query_menu(id:int = Body(...,embed=True)) :
 
 @router.post('/modify_user',response_model=Res) 
 async def modify_user(mu:Modify_User) :
+    """
+    
+    管理员修改用户
+    Parameters
+    ----------
+    mu : Modify_User
+        修改信息.
+
+    Returns
+    -------
+    res : TYPE
+        修改结果.
+
+    """
     msg=adminService.modify_user(*mu.dict().values())
     res=Res()
     res.msg=msg
@@ -224,6 +400,20 @@ async def modify_user(mu:Modify_User) :
 
 @router.post('/logout',response_model=Res)
 async def logout(id:int = Body(...,embed=True)) :
+    """
+    
+    用户登出
+    Parameters
+    ----------
+    id : int, optional
+        用户ID. The default is Body(...,embed=True).
+
+    Returns
+    -------
+    res : TYPE
+       是否登录成功.
+
+    """
     msg=adminService.logout(id)
     res=Res()
     res.msg=msg

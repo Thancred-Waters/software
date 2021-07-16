@@ -103,7 +103,6 @@ class admin():
             ans = False
         finally:
             self.conn.close()
-
         return ans, {'菜品id': data[0][0], '菜名': data[0][1], '价格': float(data[0][2]), '是否推荐': data[0][5],
                      '简介': data[0][4], '图片': data[0][3]}
 
@@ -239,7 +238,6 @@ class admin():
         try :
             self.reconnect()
             with self.conn.cursor() as cursor :
-                print(name)
                 sql = "update employee set PEOPLE_NAME='%s',LOGIN_PASSWORD='%s',PHOTO='%s' where ID=%d;"
                 cursor.execute(sql % (name,pd,pic,user_id))
             self.conn.commit()
@@ -369,7 +367,7 @@ class admin():
             with self.conn.cursor() as cursor :
                 sql="select dish_name from MENU where dish_name='%s';"
                 cursor.execute(sql % name)
-                print(cursor.fetchone()[0])
+                cursor.fetchone()[0]
             ans=False
             self.conn.commit()
         except Exception:

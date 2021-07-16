@@ -20,7 +20,7 @@ def broadcast(id:int) :
             return False,{}
         ans,data=a.broadcast()
     except Exception :
-        return 
+        return False,{}
     return ans,data
 
 def modify(id:int,
@@ -46,6 +46,7 @@ def modify(id:int,
             data["是否推荐"]="传统菜"
     except Exception :
         print("ERR modify")
+        return False,{}
     return msg,data
 
 def put(id:int,
@@ -58,6 +59,7 @@ def put(id:int,
         msg=a.put(id,content)
     except Exception :
         print("ERR put")
+        return False
     return msg
 
 def finish(id:int,
@@ -90,6 +92,7 @@ def query(id:int,
             data["是否推荐"]="传统菜"
     except Exception :
         print("ERR query")
+        return False,{}
     return msg,data
 
 def show(id:int) :
@@ -104,9 +107,9 @@ def show(id:int) :
             for dish in item["订单内容"] :
                 cnt+=int(dish["数量"])
             item.update({"菜品总数":cnt})
-        print(data)
     except Exception :
         print("ERR show")
+        return False,[]
     return msg,data
 
 def delete(id:int,
@@ -119,6 +122,7 @@ def delete(id:int,
         msg=a.delete(id,菜品id)
     except Exception :
         print("ERR delete")
+        return False
     return msg
 
 def add(id:int,
@@ -178,6 +182,7 @@ def create_user(管理员id:int,
             data={}
     except Exception :
         print("ERR create user")
+        return False,{}
     return msg,data
 
 def delete_user(管理员id:int,
@@ -214,6 +219,7 @@ def delete_user(管理员id:int,
         msg=a.delete_user(管理员id, 被删除id)
     except Exception :
         print("ERR delete user")
+        return False
     return msg
 
 def show_user(id:int) :
@@ -243,6 +249,7 @@ def show_user(id:int) :
                 user["身份"]="管理员"
     except Exception:
         print("ERR show user")
+        return False,[]
     return msg,data
 
 def modify_user(管理员id:int,

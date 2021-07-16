@@ -11,7 +11,7 @@ def show(id:int) :
             return False,{}
         ans,data=c.show()
     except Exception :
-        pass
+        return False,{}
     return ans,data
 
 def confirm(id:int,table:int,name:str,num:int) :
@@ -19,14 +19,13 @@ def confirm(id:int,table:int,name:str,num:int) :
     返回后厨是否成功确认菜品
     """
     try:
-        print(id,c.query_job(id))
         if c.query_job(id) :
             return False
         if not c.query_login(id) :
             return False
         ans=c.confirm(table,name,num)
     except Exception :
-        pass
+        return False
     return ans
 
 def finish(id:int,table:int,name:str,num:int) :
@@ -40,7 +39,7 @@ def finish(id:int,table:int,name:str,num:int) :
             return False
         ans=c.finish(table,name,num)
     except Exception :
-        pass
+        return False
     return ans
 
 def window() :
@@ -66,7 +65,7 @@ def broadcast(id:int) :
             return False,[]
         ans,data=c.broadcast()
     except Exception :
-        pass
+        return False,[]
     return ans,data
 
 def logout(id:int) :
@@ -87,5 +86,5 @@ def logout(id:int) :
     try :
         ans=c.logout(id)
     except Exception :
-        pass
+        return False
     return ans

@@ -41,7 +41,7 @@ def broadcast(id:int) :
             return False,{}
         ans,data=s.broadcast()
     except Exception :
-        return 
+        return False,{}
     return ans,data
 
 def show(id:int) :
@@ -86,7 +86,7 @@ def pass_order(id:int) :
             return False,{}
         ans,data=s.PASS()
     except Exception :
-        return 
+        return False,{}
     return ans,data
 
 def query_menu(id:int) :
@@ -119,7 +119,6 @@ def query_menu(id:int) :
 
 def pass_dish(id: int, table: int, name: str):
     try:
-        print(id,table,name)
         s.confirm_pass(id, name, table)
         msg = True
     except Exception:

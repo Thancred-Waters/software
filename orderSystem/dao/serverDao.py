@@ -175,18 +175,14 @@ class Server():
                         dish= cursor.fetchall()
                         dish_order=[]
                         sum_price=0
-                        #print("*********************************************")
                         for j in range(0,len(dish)):
                             dish_order.append({"菜品名称":dish[j][5],'数量':dish[j][6],'价格':float(dish[j][7])})
                             sum_price+=float(dish[j][7])
-                        #print("OKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
-                        print(dish_order)
                         state_inter={0:'未使用',1:'用餐中',2:'待支付'}
                         data.append({'桌号':dish[0][1],'下单时间':dish[0][4],
                                      '金额':sum_price,'人数':dish[0][2],
                                      '订单状态':state_inter[int(state[i][1])],
                                      '订单内容':dish_order})     
-                        #print("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP")
                     except Exception :
                         print("warning: server show")
                 ans = True
@@ -202,7 +198,6 @@ class Server():
             self.reconnect()
             with self.conn.cursor() as cursor:
                 sql = 'UPDATE STATE SET TABLE_STATE = 2 WHERE TABLE_NUMBER = %d;'
-                # print(results[0][0])
                 cursor.execute(sql % (table_number))  
             self.conn.commit()
             ans = True
